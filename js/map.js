@@ -1,11 +1,12 @@
-var southWest = new L.LatLng(45.120052841530516, -3.7353515625),
-    northEast = new L.LatLng(56.1944808772697, 22.631835937499996),
+var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
+    northEast = new L.LatLng(57.397624055000456, 27.0263671875),
     bounds = new L.LatLngBounds(southWest, northEast);
 
 var map = L.map('map',{
 	center: [50.98609893339354, 9.4482421875],
 	zoom: 5,
-	// maxBounds: bounds
+	minZoom: 5,
+	maxBounds: bounds
 });
 
 L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
