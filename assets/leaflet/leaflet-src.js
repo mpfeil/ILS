@@ -8388,7 +8388,6 @@ L.Control.Layers = L.Control.extend({
 	onAdd: function (map) {
 		this._initLayout();
 		this._update();
-
 		map
 		    .on('layeradd', this._onLayerChange, this)
 		    .on('layerremove', this._onLayerChange, this);
