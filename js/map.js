@@ -5,8 +5,8 @@ var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
 var map = L.map('map',{
 	center: [50.98609893339354, 9.4482421875],
 	zoom: 5,
-	minZoom: 5,
-	maxBounds: bounds
+	// minZoom: 5,
+	// maxBounds: bounds
 });
 
 L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
@@ -280,7 +280,7 @@ function changeTopic(layer){
 // 	map.fire('dataloading');
 // }
 
-var shpfile = new L.Shapefile('DatenMSWissenschaft.zip',{onEachFeature:function(feature, layer) {
+var shpfile = new L.Shapefile('assets/DatenMSWissenschaft.zip',{onEachFeature:function(feature, layer) {
 	if (layer.defaultOptions != undefined) {
 		layer.defaultOptions.color = "#00BFFF";
 	};
