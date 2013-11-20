@@ -5,8 +5,8 @@ var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
 var map = L.map('map',{
 	center: [50.98609893339354, 9.4482421875],
 	zoom: 5,
-	// minZoom: 5,
-	// maxBounds: bounds
+	minZoom: 3,
+	maxBounds: bounds
 });
 
 L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
@@ -280,19 +280,37 @@ function changeTopic(layer){
 // 	map.fire('dataloading');
 // }
 
-var shpfile = new L.Shapefile('assets/DatenMSWissenschaft.zip',{onEachFeature:function(feature, layer) {
-	if (layer.defaultOptions != undefined) {
-		layer.defaultOptions.color = "#00BFFF";
-	};
-	// layer.defaultOptions.color="#00BFFF";
-	if (feature.properties) {
-    	layer.bindPopup(Object.keys(feature.properties).map(function(k){
-        	return k + ": " + feature.properties[k] ;
-        }).join("<br />"),{maxHeight:200});
-    }
-}});
+function onEachFeature(feature, layer) {
 
-shpfile.addTo(map);
+	var popupContent = "<p>I started out as a GeoJSON " +
+			feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
+
+	if (feature.properties && feature.properties.popupContent) {
+		popupContent += feature.properties.popupContent;
+	}
+
+	layer.bindPopup(popupContent);
+}
+
+
+L.geoJson(ils, {
+
+	style: function (feature) {
+		console.log(feature);
+		return {
+	        fillColor: getColor(feature.properties.YEARs20_10),
+	        weight: 2,
+	        opacity: 1,
+	        color: 'black',
+	        dashArray: '3',
+	        fillOpacity: 0.7
+	    };
+	},
+
+	onEachFeature: onEachFeature,
+
+}).addTo(map);
+
 
 // get color depending on selected layer
 function getColor(d) {
@@ -303,8 +321,27 @@ function getColor(d) {
 	       d <= 250   	? '#F5BACE' :
 	       d <= 500   	? '#E76798' :
 	       d <= 50000  	? '#C93070' :
-	                  	  '#FFEDA0';
+	                  	  '#FFEDA0' ;
 }
+
+//style for non selected features
+function style(feature) {
+
+	// console.log(feature.properties.YEARs20_10);
+	// // console.log(getColor(feature.properties.YEARs20_10));
+
+	// return getColor(feature.properties.YEARs20_10);
+    return {
+        fillColor: getColor(feature.properties.YEARs20_10),
+        weight: 2,
+        opacity: 1,
+        color: 'black',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+
 
 var legend = L.control({position: 'bottomright'});
 
