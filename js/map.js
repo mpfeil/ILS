@@ -1,3 +1,4 @@
+var geojson;
 var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     northEast = new L.LatLng(57.397624055000456, 27.0263671875),
     bounds = new L.LatLngBounds(southWest, northEast);
@@ -14,14 +15,22 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 }).addTo(map);
 
-var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/API-key/{styleId}/256/{z}/{x}/{y}.png',
-    cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade';
+// control that shows state info on hover
+var info = L.control();
 
-var bildungswanderung   = L.tileLayer(cloudmadeUrl),
-    berufseinstiegswanderung  = L.tileLayer(cloudmadeUrl, {styleId: 999,   attribution: cloudmadeAttribution}),
-    familienwanderung  = L.tileLayer(cloudmadeUrl, {styleId: 999,   attribution: cloudmadeAttribution}),
-    wanderungImMittlerenAlter  = L.tileLayer(cloudmadeUrl, {styleId: 999,   attribution: cloudmadeAttribution}),
-    altenwanderung  = L.tileLayer(cloudmadeUrl, {styleId: 999,   attribution: cloudmadeAttribution});
+info.onAdd = function (map) {
+	this._div = L.DomUtil.create('div', 'info');
+	this.update();
+	return this._div;
+};
+
+info.update = function (props) {
+	this._div.innerHTML = '<h4>Bildungswanderung</h4>' +  (props ?
+		'<b>' + props.Kreisname + '</b><br />' + props.YEARs20_10
+		: 'Wähle einen Kreis');
+};
+
+info.addTo(map);
 
 var baseLayers = {
 	"Bildungswanderung": "bildungswanderung",
@@ -257,31 +266,6 @@ LayerSwitcher = L.Control.extend({
 
 map.addControl(new LayerSwitcher(baseLayers));
 
-// L.control.layers(baseLayers).addTo(map);
-
-// map.on('baselayerchange', changeTopic);
-
-function changeTopic(layer){
-	console.log(layer);
-};
-
-// var loadingControl = L.Control.loading({
-// 	separate: true
-// });
-
-// map.addControl(loadingControl);
-// map.on('layeradd', addLayer );
-// map.on('viewreset', function(){
-// 	console.log("adsadsadsadsad");
-// });
-
-// function addLayer(event) {
-// 	console.log(event);
-// 	map.fire('dataloading');
-// }
-
-var geojson;
-
 function highlightFeature(e) {
 	var layer = e.target;
 
@@ -295,10 +279,13 @@ function highlightFeature(e) {
 	if (!L.Browser.ie && !L.Browser.opera) {
 		layer.bringToFront();
 	}
+
+	info.update(layer.feature.properties);
 }
 
 function resetHighlight(e) {
 	geojson.resetStyle(e.target);
+	info.update();
 }
 
 function zoomToFeature(e) {
@@ -312,14 +299,14 @@ function onEachFeature(feature, layer) {
 		click: zoomToFeature
 	});
 
-	var popupContent = "<p>I started out as a GeoJSON " +
-			feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
+	// var popupContent = "<p>I started out as a GeoJSON " +
+	// 		feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
 
-	if (feature.properties && feature.properties.popupContent) {
-		popupContent += feature.properties.popupContent;
-	}
+	// if (feature.properties && feature.properties.popupContent) {
+	// 	popupContent += feature.properties.popupContent;
+	// }
 
-	layer.bindPopup(popupContent);
+	// layer.bindPopup(popupContent);
 }
 
 
@@ -355,11 +342,6 @@ function getColor(d) {
 
 //style for non selected features
 function style(feature) {
-
-	// console.log(feature.properties.YEARs20_10);
-	// // console.log(getColor(feature.properties.YEARs20_10));
-
-	// return getColor(feature.properties.YEARs20_10);
     return {
         fillColor: getColor(feature.properties.YEARs20_10),
         weight: 2,
@@ -369,8 +351,6 @@ function style(feature) {
         fillOpacity: 0.7
     };
 }
-
-
 
 var legend = L.control({position: 'bottomright'});
 
