@@ -280,7 +280,37 @@ function changeTopic(layer){
 // 	map.fire('dataloading');
 // }
 
+var geojson;
+
+function highlightFeature(e) {
+	var layer = e.target;
+
+	layer.setStyle({
+		weight: 5,
+		color: '#666',
+		dashArray: '',
+		fillOpacity: 0.7
+	});
+
+	if (!L.Browser.ie && !L.Browser.opera) {
+		layer.bringToFront();
+	}
+}
+
+function resetHighlight(e) {
+	geojson.resetStyle(e.target);
+}
+
+function zoomToFeature(e) {
+	map.fitBounds(e.target.getBounds());
+}
+
 function onEachFeature(feature, layer) {
+	layer.on({
+		mouseover: highlightFeature,
+		mouseout: resetHighlight,
+		click: zoomToFeature
+	});
 
 	var popupContent = "<p>I started out as a GeoJSON " +
 			feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
@@ -293,10 +323,9 @@ function onEachFeature(feature, layer) {
 }
 
 
-L.geoJson(ils, {
+geojson = L.geoJson(ils, {
 
 	style: function (feature) {
-		console.log(feature);
 		return {
 	        fillColor: getColor(feature.properties.YEARs20_10),
 	        weight: 2,
