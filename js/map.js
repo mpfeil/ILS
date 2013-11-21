@@ -312,16 +312,7 @@ function onEachFeature(feature, layer) {
 
 geojson = L.geoJson(ils, {
 
-	style: function (feature) {
-		return {
-	        fillColor: getColor(feature.properties.YEARs20_10),
-	        weight: 2,
-	        opacity: 1,
-	        color: 'black',
-	        dashArray: '3',
-	        fillOpacity: 0.7
-	    };
-	},
+	style: style,
 
 	onEachFeature: onEachFeature,
 
