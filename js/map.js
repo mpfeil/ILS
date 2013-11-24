@@ -1,4 +1,5 @@
-var geojson;
+var geojson,
+	selectedLayer = {layer: "bildungswanderung", name: "Bildungswanderung", overlay: undefined};
 var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     northEast = new L.LatLng(57.397624055000456, 27.0263671875),
     bounds = new L.LatLngBounds(southWest, northEast);
@@ -25,7 +26,7 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
-	this._div.innerHTML = '<h4>Bildungswanderung</h4>' +  (props ?
+	this._div.innerHTML = '<h4>'+selectedLayer.name+'</h4>' +  (props ?
 		'<b>' + props.Kreisname + '</b><br />' + props.YEARs20_10
 		: 'Wähle einen Kreis');
 };
@@ -60,7 +61,7 @@ LayerSwitcher = L.Control.extend({
 	},
 
 	_addLayer: function (layer, name, overlay) {
-		var id = this._uniqid(layer);
+		var id = layer;
 
 		this._layers[id] = {
 			layer: layer,
@@ -72,34 +73,6 @@ LayerSwitcher = L.Control.extend({
 			this._lastZIndex++;
 			layer.setZIndex(this._lastZIndex);
 		}
-	},
-
-	_eliminateDuplicates: function (arr) {
-	    var i, len = arr.length,
-	        out = [],
-	        obj = {};
-
-	    for (i = 0; i < len; i++) {
-	        obj[arr[i]] = 0;
-	    }
-	    for (i in obj) {
-	        out.push(i);
-	    }
-	    return out;
-	},
-
-	_uniqid: function (str) {
-	    var len = str.length;
-	    var chars = [];
-	    for (var i = 0; i < len; i++) {
-
-	        chars[i] = str[Math.floor((Math.random() * len))];
-
-	    }
-
-	    var filtered = this._eliminateDuplicates(chars);
-
-	    return filtered.join('');
 	},
 
 	onAdd: function (map) {
@@ -189,7 +162,7 @@ LayerSwitcher = L.Control.extend({
 	_addItem: function (obj) {
 		var label = document.createElement('label'),
 		    input,
-		    checked = this._map.hasLayer(obj.layer);
+		    checked = obj.layer == "bildungswanderung" ? true : false;
 		if (obj.overlay) {
 			input = document.createElement('input');
 			input.type = 'checkbox';
@@ -199,8 +172,7 @@ LayerSwitcher = L.Control.extend({
 			input = this._createRadioElement('leaflet-base-layers', checked);
 		}
 
-		// input.layerId = L.stamp(obj.layer);
-		// input.layerId = this._uniqid(obj.layer);
+		input.id = obj.layer;
 
 		L.DomEvent.on(input, 'click', this._onInputClick, this);
 
@@ -222,17 +194,14 @@ LayerSwitcher = L.Control.extend({
 		    inputsLen = inputs.length;
 
 		this._handlingClick = true;
-
+		
 		for (i = 0; i < inputsLen; i++) {
 			input = inputs[i];
-			obj = this._layers[input.layerId];
-
-			if (input.checked && !this._map.hasLayer(obj.layer)) {
-				this._map.addLayer(obj.layer);
-
-			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
-				this._map.removeLayer(obj.layer);
-			}
+			if (input.checked) {
+				selectedLayer = this._layers[input.id];
+				geojson.setStyle(style);
+				info.update();
+			} 
 		}
 
 		this._handlingClick = false;
@@ -334,7 +303,12 @@ function getColor(d) {
 //style for non selected features
 function style(feature) {
     return {
-        fillColor: getColor(feature.properties.YEARs20_10),
+        fillColor: selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties.YEARs20_10) :
+        		   selectedLayer.layer == "berufseinstiegswanderung" ? getColor(feature.properties.YEARs2000T) :
+        		   selectedLayer.layer == "familienwanderung" ? getColor(feature.properties.YEARs200_2) :
+        		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties.YEARs200_9) :
+        		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties.YEARs20_13) :
+        		   getColor(feature.properties.YEARs200_1),
         weight: 2,
         opacity: 1,
         color: 'black',
