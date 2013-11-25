@@ -1,5 +1,10 @@
 var geojson,
-	selectedLayer = {layer: "bildungswanderung", name: "Bildungswanderung", overlay: undefined};
+	selectedLayer = {
+		layer: "wanderunggesamt", 
+		name: "Wanderung gesamt", 
+		overlay: undefined,
+		associatedLayers: ["YEARs200_1","YEARs2004T","YEARs2008T"]
+	};
 var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     northEast = new L.LatLng(57.397624055000456, 27.0263671875),
     bounds = new L.LatLngBounds(southWest, northEast);
@@ -7,7 +12,7 @@ var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
 var map = L.map('map',{
 	center: [50.98609893339354, 9.4482421875],
 	zoom: 5,
-	minZoom: 3,
+	minZoom: 5,
 	maxBounds: bounds
 });
 
@@ -15,6 +20,31 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
 	maxZoom: 18,
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 }).addTo(map);
+
+var slider = L.control({position: 'bottomleft'});
+
+slider.onAdd = function (map) {
+	var div = L.DomUtil.create('div', 'info slider');
+
+	
+ //    <code>d3.slider().axis(true).min(2000).max(2100).step(5)</code>
+ //    <div id="slider6"></div>
+
+	// for (var i = 0; i < grades.length; i=i+2) {
+	// 	from = grades[i];
+	// 	to = grades[i + 1];
+
+	// 	labels.push(
+	// 		'<i style="background:' + getColor(from + 1) + '"></i> ' +
+	// 		from + (to ? '&ndash;' + to : '+'));
+	// }
+	div.innerHTML = "<div id='slider'></div>";
+	// div.innerHTML = labels.join('<br>');
+	return div;
+}
+
+slider.addTo(map);
+
 
 // control that shows state info on hover
 var info = L.control();
@@ -34,6 +64,7 @@ info.update = function (props) {
 info.addTo(map);
 
 var baseLayers = {
+	"Wanderung gesamt": "wanderunggesamt",
 	"Bildungswanderung": "bildungswanderung",
 	"Berufseinstiegswanderung": "berufseinstiegswanderung",
 	"Familienwanderung": "familienwanderung",
@@ -162,7 +193,7 @@ LayerSwitcher = L.Control.extend({
 	_addItem: function (obj) {
 		var label = document.createElement('label'),
 		    input,
-		    checked = obj.layer == "bildungswanderung" ? true : false;
+		    checked = obj.layer == "wanderunggesamt" ? true : false;
 		if (obj.overlay) {
 			input = document.createElement('input');
 			input.type = 'checkbox';
@@ -303,11 +334,12 @@ function getColor(d) {
 //style for non selected features
 function style(feature) {
     return {
-        fillColor: selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties.YEARs20_10) :
-        		   selectedLayer.layer == "berufseinstiegswanderung" ? getColor(feature.properties.YEARs2000T) :
-        		   selectedLayer.layer == "familienwanderung" ? getColor(feature.properties.YEARs200_2) :
-        		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties.YEARs200_9) :
-        		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties.YEARs20_13) :
+        fillColor: selectedLayer.layer == "wanderunggesamt" ? getColor(feature.properties.YEARs2000T) :
+        		   selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties.YEARs200_2) :
+        		   selectedLayer.layer == "berufseinstiegswanderung" ? getColor(feature.properties.YEARs200_6) :
+        		   selectedLayer.layer == "familienwanderung" ? getColor(feature.properties.YEARs20_10) :
+        		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties.YEARs20_14) :
+        		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties.YEARs20_18) :
         		   getColor(feature.properties.YEARs200_1),
         weight: 2,
         opacity: 1,
