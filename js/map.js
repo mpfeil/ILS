@@ -3,7 +3,8 @@ var geojson,
 		layer: "wanderunggesamt", 
 		name: "Wanderung gesamt", 
 		overlay: undefined,
-		associatedLayers: ["YEARs2000T","YEARs200_1","YEARs2004T","YEARs2008T"]
+		associatedLayers: ["YEARs2000T","YEARs200_1","YEARs2004T","YEARs2008T"],
+		timeStamp: 0
 	};
 var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     northEast = new L.LatLng(57.397624055000456, 27.0263671875),
@@ -54,7 +55,8 @@ $(function() {
 			4: '2008-2011',	
 		},
 		slide: function ( e, ui ) {
-        	console.log("test");
+			selectedLayer.timeStamp = ui.value-1;
+        	geojson.setStyle(style);
        	} 
 	});
 });
@@ -110,10 +112,26 @@ LayerSwitcher = L.Control.extend({
 	_addLayer: function (layer, name, overlay) {
 		var id = layer;
 
+		if (layer == "wanderunggesamt") {
+			associatedLayers = ["YEARs2000T","YEARs200_1","YEARs2004T","YEARs2008T"];
+		} else if(layer == "bildungswanderung"){
+			associatedLayers = ["YEARs200_2","YEARs200_3","YEARs200_4","YEARs200_5"];
+		} else if(layer == "berufseinstiegswanderung"){
+			associatedLayers = ["YEARs200_6","YEARs200_7","YEARs200_8","YEARs200_9"];
+		} else if(layer == "familienwanderung"){
+			associatedLayers = ["YEARs20_10","YEARs20_11","YEARs20_12","YEARs20_13"];
+		} else if(layer == "wanderungImMittlerenAlter"){
+			associatedLayers = ["YEARs20_14","YEARs20_15","YEARs20_16","YEARs20_17"];
+		} else if(layer == "altenwanderung"){
+			associatedLayers = ["YEARs20_18","YEARs20_19","YEARs20_20","YEARs20_21"];
+		};
+
 		this._layers[id] = {
 			layer: layer,
 			name: name,
-			overlay: overlay
+			overlay: overlay,
+			associatedLayers: associatedLayers,
+			timeStamp: 1
 		};
 
 		if (this.options.autoZIndex && layer.setZIndex) {
@@ -246,6 +264,8 @@ LayerSwitcher = L.Control.extend({
 			input = inputs[i];
 			if (input.checked) {
 				selectedLayer = this._layers[input.id];
+				selectedLayer.timeStamp = 0;
+				$('#slider').labeledslider("value", 0);
 				geojson.setStyle(style);
 				info.update();
 			} 
@@ -314,15 +334,6 @@ function onEachFeature(feature, layer) {
 		mouseout: resetHighlight,
 		click: zoomToFeature
 	});
-
-	// var popupContent = "<p>I started out as a GeoJSON " +
-	// 		feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
-
-	// if (feature.properties && feature.properties.popupContent) {
-	// 	popupContent += feature.properties.popupContent;
-	// }
-
-	// layer.bindPopup(popupContent);
 }
 
 
@@ -347,15 +358,20 @@ function getColor(d) {
 	                  	  '#FFEDA0' ;
 }
 
+var featuretest;
+
 //style for non selected features
 function style(feature) {
+	featuretest = feature;
+	value = selectedLayer.associatedLayers[selectedLayer.timeStamp];
+	console.log(value);
     return {
-        fillColor: selectedLayer.layer == "wanderunggesamt" ? getColor(feature.properties.YEARs2000T) :
-        		   selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties.YEARs200_2) :
-        		   selectedLayer.layer == "berufseinstiegswanderung" ? getColor(feature.properties.YEARs200_6) :
-        		   selectedLayer.layer == "familienwanderung" ? getColor(feature.properties.YEARs20_10) :
-        		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties.YEARs20_14) :
-        		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties.YEARs20_18) :
+        fillColor: selectedLayer.layer == "wanderunggesamt" ? getColor(feature.properties[value]) :
+        		   selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties[value]) :
+        		   selectedLayer.layer == "berufseinstiegswanderung" ? getColor(feature.properties[value]) :
+        		   selectedLayer.layer == "familienwanderung" ? getColor(feature.properties[value]) :
+        		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties[value]) :
+        		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties[value]) :
         		   getColor(feature.properties.YEARs200_1),
         weight: 2,
         opacity: 1,
