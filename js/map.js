@@ -3,7 +3,7 @@ var geojson,
 		layer: "wanderunggesamt", 
 		name: "Wanderung gesamt", 
 		overlay: undefined,
-		associatedLayers: ["YEARs200_1","YEARs2004T","YEARs2008T"]
+		associatedLayers: ["YEARs2000T","YEARs200_1","YEARs2004T","YEARs2008T"]
 	};
 var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     northEast = new L.LatLng(57.397624055000456, 27.0263671875),
@@ -21,27 +21,43 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 }).addTo(map);
 
-var slider = L.control({position: 'bottomleft'});
+//slider control to switch between years
+var slider = L.control({position: 'bottomleft'})
 
 slider.onAdd = function (map) {
-	var div = L.DomUtil.create('div', 'info slider');
+	var div = L.DomUtil.create('div', 'info');
 
-	
- //    <code>d3.slider().axis(true).min(2000).max(2100).step(5)</code>
- //    <div id="slider6"></div>
+	//stop and catch events that happen on the slider div
+	var stop = L.DomEvent.stopPropagation;
 
-	// for (var i = 0; i < grades.length; i=i+2) {
-	// 	from = grades[i];
-	// 	to = grades[i + 1];
+	L.DomEvent
+	    .on(div, 'click', stop)
+	    .on(div, 'mousedown', stop)
+	    .on(div, 'dblclick', stop)
+	    .on(div, 'click', L.DomEvent.preventDefault);
 
-	// 	labels.push(
-	// 		'<i style="background:' + getColor(from + 1) + '"></i> ' +
-	// 		from + (to ? '&ndash;' + to : '+'));
-	// }
 	div.innerHTML = "<div id='slider'></div>";
-	// div.innerHTML = labels.join('<br>');
+
 	return div;
 }
+
+$(function() {
+	$('#slider').labeledslider({
+		min:1,
+		max: 4, 
+		step: 1,
+		tickArray:[1,2,3,4],
+		tickLabels:{
+			1: '2000-2011',
+			2: '2000-2003',
+			3: '2004-2007',
+			4: '2008-2011',	
+		},
+		slide: function ( e, ui ) {
+        	console.log("test");
+       	} 
+	});
+});
 
 slider.addTo(map);
 
