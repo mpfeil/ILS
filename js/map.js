@@ -75,7 +75,7 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
 	this._div.innerHTML = '<h4>'+selectedLayer.name+'</h4>' +  (props ?
-		'<b>' + props.Kreisname + '</b><br />' + props.YEARs20_10
+		'<b>' + props.Kreisname + '</b><br />' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + " Personen pro 100.000 Einwohnern"
 		: 'Wähle einen Kreis');
 };
 
@@ -358,13 +358,10 @@ function getColor(d) {
 	                  	  '#FFEDA0' ;
 }
 
-var featuretest;
-
 //style for non selected features
 function style(feature) {
-	featuretest = feature;
 	value = selectedLayer.associatedLayers[selectedLayer.timeStamp];
-	console.log(value);
+
     return {
         fillColor: selectedLayer.layer == "wanderunggesamt" ? getColor(feature.properties[value]) :
         		   selectedLayer.layer == "bildungswanderung" ? getColor(feature.properties[value]) :
