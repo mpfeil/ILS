@@ -75,7 +75,7 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
 	this._div.innerHTML = '<h4>'+selectedLayer.name+'</h4>' +  (props ?
-		'<b>' + props.Kreisname + '</b><br />' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + " Personen pro 100.000 Einwohnern"
+		'<b>' + props.Kreisname + '</b><hr> Einwohnerzahl (Stand: 31.12.2011): ' + props.Einwohnerzahl + '<br /> ' + props.GewinneVerluste + '<hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern'
 		: 'Wähle einen Kreis');
 };
 
@@ -370,7 +370,7 @@ function style(feature) {
         		   selectedLayer.layer == "wanderungImMittlerenAlter" ? getColor(feature.properties[value]) :
         		   selectedLayer.layer == "altenwanderung" ? getColor(feature.properties[value]) :
         		   getColor(feature.properties.YEARs200_1),
-        weight: 2,
+        weight: 1,
         opacity: 1,
         color: 'black',
         dashArray: '3',
