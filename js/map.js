@@ -22,6 +22,31 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 }).addTo(map);
 
+var extentGermany = L.control({position: 'topleft'});
+
+extentGermany.onAdd = function (map) {
+	var div = L.DomUtil.create('div', 'info extent');
+
+	//stop and catch events that happen on the slider div
+	var stop = L.DomEvent.stopPropagation;
+
+	L.DomEvent.on(div,'click',function(){
+		map.setView([50.98609893339354, 9.4482421875],5);	
+	});
+
+	L.DomEvent
+	    .on(div, 'click', stop)
+	    .on(div, 'mousedown', stop)
+	    .on(div, 'dblclick', stop)
+	    .on(div, 'click', L.DomEvent.preventDefault);
+
+	div.innerHTML = "<div id='extent'></div>";
+
+	return div;
+}
+
+extentGermany.addTo(map);
+
 //slider control to switch between years
 var slider = L.control({position: 'bottomleft'})
 
@@ -393,7 +418,7 @@ legend.onAdd = function (map) {
 
 		labels.push(
 			'<i style="background:' + getColor(from + 1) + '"></i> ' +
-			from + (to ? '&ndash;' + to : '+'));
+			from + (to ? ' &ndash; ' + to : '+'));
 	}
 
 	div.innerHTML = labels.join('<br>');

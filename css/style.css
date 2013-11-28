@@ -32,7 +32,16 @@
 }
 
 #slider {
-	width: 250px;
+	width: 190px;
+}
+
+.extent {
+	width: 10px;
+	height: 16px;
+	background-image: url(images/fullextent.png);
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 .ui-slider-wrapper.horizontal {
