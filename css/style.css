@@ -38,10 +38,16 @@
 .extent {
 	width: 10px;
 	height: 16px;
+	background: rgba(255,255,255,1);
 	background-image: url(images/fullextent.png);
 	background-size: 16px 16px;
 	background-repeat: no-repeat;
 	background-position: center;
+}
+
+.extent:hover {
+	background-color: #f4f4f4;
+
 }
 
 .ui-slider-wrapper.horizontal {
