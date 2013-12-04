@@ -5,7 +5,8 @@
 
 .info {
 	padding: 6px 8px;
-	font: 14px/16px Arial, Helvetica, sans-serif;
+	/*font: 14px/16px Arial, Helvetica, sans-serif;*/
+	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 	background: white;
 	background: rgba(255,255,255,0.8);
 	box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -20,7 +21,6 @@
 .legend {
 	text-align: left;
 	line-height: 18px;
-	color: #555;
 }
 
 .legend i {
@@ -50,6 +50,10 @@
 
 }
 
+.ui-widget {
+	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
 .ui-slider-wrapper.horizontal {
 	height: 3.5em;
 	margin-left: 25px;
@@ -57,10 +61,6 @@
 	margin-top: 15px;
 }
 
-.ui-slider-label-ticks span {
-	font-size: 0.8em;
-}
-
 .horizontal .ui-slider-label-ticks span {
-	margin-left: -2.7em;
+	margin-left: -2.5em;
 }
