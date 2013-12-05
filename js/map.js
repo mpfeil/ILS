@@ -420,8 +420,9 @@ legend.onAdd = function (map) {
 			'<i style="background:' + getColor(from + 1) + '"></i> ' +
 			from + (to ? ' &ndash; ' + to : '+'));
 	}
-
-	div.innerHTML = labels.join('<br>');
+	div.innerHTML = '<h4>Gewinn / Verlust</h4>';
+	div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
+	div.innerHTML += labels.join('<br>');
 	return div;
 };
 
