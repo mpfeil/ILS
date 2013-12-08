@@ -142,7 +142,7 @@ info.onAdd = function (map) {
 info.update = function (props) {
 
 	this._div.innerHTML = '<h4>'+selectedLayer.name+' ('+getTimeValue(selectedLayer.timeStamp)+')</h4>' +  (props ?
-		'<b>' + props.Kreisname + '</b><hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern <hr> Einwohnerzahl (Stand: 31.12.2011): ' + props.Einwohnerzahl 
+		'<b>' + props.Kreisname + '</b><hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern <hr> Einwohnerzahl (Stand: 31.12.2011): ' + numberWithKDots(props.Einwohnerzahl) 
 		// '<br /> ' + props.GewinneVerluste + '<hr>' 
 		
 		: 'Wähle einen Kreis');
@@ -453,6 +453,10 @@ function style(feature) {
         dashArray: '3',
         fillOpacity: 0.7
     };
+}
+
+function numberWithKDots(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 // // control that shows state info on hover
