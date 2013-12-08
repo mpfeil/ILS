@@ -143,7 +143,7 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
 
-	this._div.innerHTML = '<h4>'+selectedLayer.name+' ('+getTimeValue(selectedLayer.timeStamp)+')</h4>' +  (props ?
+	this._div.innerHTML = '<h4>'+selectedLayer.name.split(" (")[0]+' ('+getTimeValue(selectedLayer.timeStamp)+')</h4>' +  (props ?
 		'<b>' + props.Kreisname + '</b><hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern <hr> Einwohnerzahl (Stand: 31.12.2011): ' + numberWithKDots(props.Einwohnerzahl) 
 		// '<br /> ' + props.GewinneVerluste + '<hr>' 
 		
