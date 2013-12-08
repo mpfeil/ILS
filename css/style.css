@@ -1,6 +1,41 @@
 #map {
-	width: 800px;
+	/*width: 800px;*/
+	width: 576px;
 	height: 500px;
+}
+
+#controls {
+	width: 576px;
+	height: 220px;
+	display: inline-flex;
+	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.actionControls {
+	width: 100%;
+}
+
+#actions {
+	width: 60%;
+}
+
+#information {
+	padding-left: 35px;
+}
+
+#divSwitcher {
+	height: 135px;
+	padding-top: 10px;
+}
+
+#divLegend {
+	padding-top: 10px;
+}
+
+#divSlider {
+	/*border: solid;*/
+/*	width: 200px;
+	display: inline-block;*/
 }
 
 .info {
@@ -35,10 +70,6 @@
 	margin: 0 0 0 0;
 }
 
-#slider {
-	width: 190px;
-}
-
 .extent {
 	width: 10px;
 	height: 16px;
@@ -52,6 +83,10 @@
 .extent:hover {
 	background-color: #f4f4f4;
 
+}
+
+#slider {
+	width: 300px;
 }
 
 .ui-widget {

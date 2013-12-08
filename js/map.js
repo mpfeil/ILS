@@ -1,7 +1,7 @@
 var geojson,
 	selectedLayer = {
 		layer: "wanderunggesamt", 
-		name: "Wanderung gesamt", 
+		name: "Wanderungen gesamt", 
 		overlay: undefined,
 		associatedLayers: ["YEARs2000T","YEARs200_1","YEARs2004T","YEARs2008T"],
 		timeStamp: 0
@@ -11,8 +11,9 @@ var southWest = new L.LatLng(43.54854811091288, -8.1298828125),
     bounds = new L.LatLngBounds(southWest, northEast);
 
 var map = L.map('map',{
+	// center: [50.98609893339354, 9.4482421875],
 	center: [50.98609893339354, 9.4482421875],
-	zoom: 5,
+	zoom: 6,
 	minZoom: 5,
 	maxBounds: bounds
 });
@@ -21,6 +22,45 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
 	maxZoom: 18,
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 }).addTo(map);
+
+var divSlider = L.DomUtil.create('div', 'info actionControls');
+
+//stop and catch events that happen on the slider div
+var stop = L.DomEvent.stopPropagation;
+
+L.DomEvent
+    .on(divSlider, 'click', stop)
+    .on(divSlider, 'mousedown', stop)
+    .on(divSlider, 'dblclick', stop)
+    .on(divSlider, 'click', L.DomEvent.preventDefault);
+
+divSlider.innerHTML = "<div id='slider'></div>";
+$('#divSlider').append(divSlider.outerHTML);
+
+// control that shows state info on hover
+var divlegend = L.control();
+
+var div = L.DomUtil.create('div', 'info legend'),
+// grades = [-50000, -500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501, 50000],
+grades = [-500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501],
+labels = [],
+from, to;
+
+labels.push(
+'<i style="background:' + getColor(grades[0]) + '"></i> unter ' + grades[0]);
+
+for (var i = 1; i < grades.length; i=i+2) {
+from = grades[i];
+to = grades[i + 1];
+
+labels.push(
+	'<i style="background:' + getColor(from + 1) + '"></i> ' +
+	(to ? from + ' &ndash; ' + to : 'über ' + from));
+}
+div.innerHTML = '<h4>Gewinn / Verlust</h4>';
+div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
+div.innerHTML += labels.join('<br>');
+$('#divLegend').append(div.outerHTML);
 
 var extentGermany = L.control({position: 'topleft'});
 
@@ -41,31 +81,31 @@ extentGermany.onAdd = function (map) {
 	    .on(div, 'click', L.DomEvent.preventDefault);
 
 	div.innerHTML = "<div id='extent'></div>";
-
 	return div;
 }
 
 extentGermany.addTo(map);
 
+
 //slider control to switch between years
-var slider = L.control({position: 'bottomleft'})
+// var slider = L.control({position: 'bottomleft'})
 
-slider.onAdd = function (map) {
-	var div = L.DomUtil.create('div', 'info');
+// slider.onAdd = function (map) {
+// 	var div = L.DomUtil.create('div', 'info');
 
-	//stop and catch events that happen on the slider div
-	var stop = L.DomEvent.stopPropagation;
+// 	//stop and catch events that happen on the slider div
+// 	var stop = L.DomEvent.stopPropagation;
 
-	L.DomEvent
-	    .on(div, 'click', stop)
-	    .on(div, 'mousedown', stop)
-	    .on(div, 'dblclick', stop)
-	    .on(div, 'click', L.DomEvent.preventDefault);
+// 	L.DomEvent
+// 	    .on(div, 'click', stop)
+// 	    .on(div, 'mousedown', stop)
+// 	    .on(div, 'dblclick', stop)
+// 	    .on(div, 'click', L.DomEvent.preventDefault);
 
-	div.innerHTML = "<div id='slider'></div>";
-
-	return div;
-}
+// 	div.innerHTML = "<div id='slider'></div>";
+// 	$('#divSlider').append(div.outerHTML);
+// 	return div;
+// }
 
 $(function() {
 	$('#slider').labeledslider({
@@ -81,12 +121,13 @@ $(function() {
 		},
 		slide: function ( e, ui ) {
 			selectedLayer.timeStamp = ui.value-1;
+			info.update();
         	geojson.setStyle(style);
        	} 
 	});
 });
 
-slider.addTo(map);
+// slider.addTo(map);
 
 
 // control that shows state info on hover
@@ -99,25 +140,28 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
-	this._div.innerHTML = '<h4>'+selectedLayer.name+'</h4>' +  (props ?
-		'<b>' + props.Kreisname + '</b><hr> Einwohnerzahl (Stand: 31.12.2011): ' + props.Einwohnerzahl + '<br /> ' + props.GewinneVerluste + '<hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern'
+
+	this._div.innerHTML = '<h4>'+selectedLayer.name+' ('+getTimeValue(selectedLayer.timeStamp)+')</h4>' +  (props ?
+		'<b>' + props.Kreisname + '</b><hr>' + props[selectedLayer.associatedLayers[selectedLayer.timeStamp]] + ' Personen pro 100.000 Einwohnern <hr> Einwohnerzahl (Stand: 31.12.2011): ' + props.Einwohnerzahl 
+		// '<br /> ' + props.GewinneVerluste + '<hr>' 
+		
 		: 'Wähle einen Kreis');
 };
 
 info.addTo(map);
 
 var baseLayers = {
-	"Wanderung gesamt": "wanderunggesamt",
-	"Bildungswanderung": "bildungswanderung",
-	"Berufseinstiegswanderung": "berufseinstiegswanderung",
-	"Familienwanderung": "familienwanderung",
-	"Wanderung im mittleren Alter": "wanderungImMittlerenAlter",
-	"Altenwanderung": "altenwanderung"
+	"Wanderungen gesamt": "wanderunggesamt",
+	"Bildungswanderungen (18 - 24 Jahre)": "bildungswanderung",
+	"Berufseinstiegswanderungen (25 - 29 Jahre)": "berufseinstiegswanderung",
+	"Familienwanderungen (30 - 49 Jahre)": "familienwanderung",
+	"Wanderungen im mittleren Alter (50 - 64 Jahre)": "wanderungImMittlerenAlter",
+	"Altenwanderungen (65 und mehr Jahre)": "altenwanderung"
 };
 
 LayerSwitcher = L.Control.extend({
 	options: {
-		collapsed: true,
+		collapsed: false,
 		position: 'topright',
 		autoZIndex: true
 	},
@@ -171,7 +215,6 @@ LayerSwitcher = L.Control.extend({
 		// map
 		//     .on('layeradd', this._onLayerChange, this)
 		//     .on('layerremove', this._onLayerChange, this);
-
 		return this._container;
 	},
 
@@ -326,6 +369,7 @@ LayerSwitcher = L.Control.extend({
 });
 
 map.addControl(new LayerSwitcher(baseLayers));
+$('.leaflet-control-layers').addClass('actionControls').appendTo('#divSwitcher');
 
 function highlightFeature(e) {
 	var layer = e.target;
@@ -383,6 +427,14 @@ function getColor(d) {
 	                  	  '#FFEDA0' ;
 }
 
+function getTimeValue(value) {
+	return value == 0 ? '2000-2011' :
+		   value == 1 ? '2000-2003' :
+		   value == 2 ? '2004-2007' :
+		   value == 3 ? '2008-2011' :
+		   				'' ;
+}
+
 //style for non selected features
 function style(feature) {
 	value = selectedLayer.associatedLayers[selectedLayer.timeStamp];
@@ -403,27 +455,73 @@ function style(feature) {
     };
 }
 
-var legend = L.control({position: 'bottomright'});
+// // control that shows state info on hover
+// var divlegend = L.control();
 
-legend.onAdd = function (map) {
+// divlegend.onAdd = function (map) {
+// 		var div = L.DomUtil.create('div', 'info legend'),
+// 		// grades = [-50000, -500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501, 50000],
+// 		grades = [-500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501],
+// 		labels = [],
+// 		from, to;
 
-	var div = L.DomUtil.create('div', 'info legend'),
-		grades = [-50000, -500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501, 50000],
-		labels = [],
-		from, to;
+// 	labels.push(
+// 		'<i style="background:' + getColor(grades[0]) + '"></i> unter ' + grades[0]);
 
-	for (var i = 0; i < grades.length; i=i+2) {
-		from = grades[i];
-		to = grades[i + 1];
+// 	for (var i = 1; i < grades.length; i=i+2) {
+// 		from = grades[i];
+// 		to = grades[i + 1];
 
-		labels.push(
-			'<i style="background:' + getColor(from + 1) + '"></i> ' +
-			from + (to ? ' &ndash; ' + to : '+'));
-	}
-	div.innerHTML = '<h4>Gewinn / Verlust</h4>';
-	div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
-	div.innerHTML += labels.join('<br>');
-	return div;
-};
+// 		// labels.push(
+// 		// 	'<i style="background:' + getColor(from + 1) + '"></i> ' +
+// 		// 	from + (to ? ' &ndash; ' + to : '+'));
 
-legend.addTo(map);
+// 		labels.push(
+// 			'<i style="background:' + getColor(from + 1) + '"></i> ' +
+// 			(to ? from + ' &ndash; ' + to : 'über ' + from));
+// 	}
+// 	div.innerHTML = '<h4>Gewinn / Verlust</h4>';
+// 	div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
+// 	div.innerHTML += labels.join('<br>');
+// 	$('#divLegend').append(div.outerHTML);
+// 	// return div;
+// 	return '';
+// };
+
+// divlegend.addTo(map);
+
+
+// legend.onAdd = function (map) {
+
+// 	var div = L.DomUtil.create('div', 'info legend'),
+// 		// grades = [-50000, -500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501, 50000],
+// 		grades = [-500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501],
+// 		labels = [],
+// 		from, to;
+
+// 		console.log(grades[0]);
+
+// 	labels.push(
+// 		'<i style="background:' + getColor(grades[0]) + '"></i> unter ' + grades[0]);
+
+// 	for (var i = 1; i < grades.length; i=i+2) {
+// 		from = grades[i];
+// 		to = grades[i + 1];
+
+// 		// labels.push(
+// 		// 	'<i style="background:' + getColor(from + 1) + '"></i> ' +
+// 		// 	from + (to ? ' &ndash; ' + to : '+'));
+
+// 		labels.push(
+// 			'<i style="background:' + getColor(from + 1) + '"></i> ' +
+// 			(to ? from + ' &ndash; ' + to : 'über ' + from));
+// 	}
+// 	div.innerHTML = '<h4>Gewinn / Verlust</h4>';
+// 	div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
+// 	div.innerHTML += labels.join('<br>');
+// 	console.log(div);
+// 	console.log(div.innerHTML);
+// 	return div;
+// };
+
+// legend.addTo(map);
