@@ -43,7 +43,7 @@ var divlegend = L.control();
 
 var div = L.DomUtil.create('div', 'info legend'),
 // grades = [-50000, -500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501, 50000],
-grades = [-500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 501],
+grades = [-500, -499, -250, -249, -50, -49, 50, 51, 250, 251, 500, 500],
 labels = [],
 from, to;
 
@@ -58,7 +58,7 @@ labels.push(
 	'<i style="background:' + getColor(from + 1) + '"></i> ' +
 	(to ? from + ' &ndash; ' + to : 'über ' + from));
 }
-div.innerHTML = '<h4>Gewinn / Verlust</h4>';
+div.innerHTML = '<h4 id="legendTitle">Gewinn / Verlust durch Wanderungen im mittleren Alter 2000 - 2011</h4>';
 div.innerHTML += '<h6>Anzahl Personen pro 100.000 Einwohner</h6>';
 div.innerHTML += labels.join('<br>');
 $('#divLegend').append(div.outerHTML);
@@ -123,6 +123,7 @@ $(function() {
 		slide: function ( e, ui ) {
 			selectedLayer.timeStamp = ui.value-1;
 			info.update();
+			updateLegend();
         	geojson.setStyle(style);
        	} 
 	});
@@ -213,9 +214,8 @@ LayerSwitcher = L.Control.extend({
 	onAdd: function (map) {
 		this._initLayout();
 		this._update();
-		// map
-		//     .on('layeradd', this._onLayerChange, this)
-		//     .on('layerremove', this._onLayerChange, this);
+		updateLegend();
+
 		return this._container;
 	},
 
@@ -337,6 +337,7 @@ LayerSwitcher = L.Control.extend({
 				$('#slider').labeledslider("value", 0);
 				geojson.setStyle(style);
 				info.update();
+				updateLegend();
 			} 
 		}
 
@@ -458,6 +459,10 @@ function style(feature) {
 
 function numberWithKDots(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function updateLegend(){
+	$('#legendTitle').text("Gewinn / Verlust durch "+selectedLayer.name+" "+getTimeValue(selectedLayer.timeStamp));
 }
 
 // // control that shows state info on hover

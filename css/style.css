@@ -21,10 +21,11 @@
 
 #information {
 	padding-left: 35px;
+	width: 35%;
 }
 
 #divSwitcher {
-	height: 135px;
+	height: 145px;
 	padding-top: 10px;
 }
 
@@ -44,7 +45,7 @@
 	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 	background: white;
 	background: rgba(255,255,255,0.8);
-	box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
 	border-radius: 5px;
 }
 
@@ -101,5 +102,5 @@
 }
 
 .horizontal .ui-slider-label-ticks span {
-	margin-left: -2.5em;
+	margin-left: -2.85em;
 }
