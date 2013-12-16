@@ -1,11 +1,11 @@
 #map {
 	/*width: 800px;*/
-	width: 576px;
+	width: 555px;
 	height: 500px;
 }
 
 #controls {
-	width: 576px;
+	width: 555px;
 	height: 220px;
 	display: inline-flex;
 	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
@@ -87,7 +87,7 @@
 }
 
 #slider {
-	width: 300px;
+	width: 280px;
 }
 
 .ui-widget {
@@ -102,5 +102,5 @@
 }
 
 .horizontal .ui-slider-label-ticks span {
-	margin-left: -2.85em;
+	margin-left: -2.6em;
 }
